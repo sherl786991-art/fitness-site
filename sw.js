@@ -1,6 +1,6 @@
 /* 离线缓存：先给缓存，再后台更新本地副本。
    这个文件由 build-sw.js 生成，改了网站文件以后重新跑一次。 */
-var CACHE = "fit-38c8c45bd4";
+var CACHE = "fit-01cfbc660b";
 var ASSETS = [
   "./",
   "./assets/css/style.css",
@@ -28,6 +28,7 @@ var ASSETS = [
   "./assets/img/mon-04.jpg",
   "./assets/img/mon-05.jpg",
   "./assets/img/mon-06.jpg",
+  "./assets/img/og-cover.png",
   "./assets/img/tue-01.jpg",
   "./assets/img/tue-02.jpg",
   "./assets/img/tue-03.jpg",
