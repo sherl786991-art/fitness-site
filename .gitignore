@@ -1,0 +1,13 @@
+# 开发预览截图 / 临时文件
+preview/
+_qa*.html
+
+# 发布产物（由 build-dist.js 生成）
+dist/
+
+# 本地环境
+node_modules/
+.netlify/
+*.log
+Thumbs.db
+.DS_Store

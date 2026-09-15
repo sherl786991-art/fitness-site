@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>一周训练计划 · 动作要领</title>
+<meta name="description" content="简约健身教学：一周五练两休，每个动作的组数、次数、组间间歇、节奏与精细动作要领，含热身、拉伸、计时、打卡，可离线打开。" />
+<meta name="theme-color" content="#fbfaf8" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="训练手册" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="assets/img/icon-180.png" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23141110'/%3E%3Crect x='6' y='13' width='4' height='6' rx='1' fill='%23fff'/%3E%3Crect x='22' y='13' width='4' height='6' rx='1' fill='%23fff'/%3E%3Crect x='11' y='15' width='10' height='2' fill='%23E04A2F'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="assets/css/style.css" />
+<script>
+  /* 先定配色，避免首屏闪白 */
+  (function () {
+    try {
+      var saved = localStorage.getItem("fitness-plan.theme.v1");
+      var ok = ["white", "black", "gray", "pink", "blue"];
+      var dark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+      var theme = ok.indexOf(saved) >= 0 ? saved : (dark ? "black" : "white");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "white");
+    }
+  })();
+</script>
+</head>
+<body>
+
+<header class="app-bar">
+  <div class="wrap app-bar-inner">
+    <button type="button" class="brand" id="brandPrefs" aria-label="个人喜好" title="个人喜好">
+      <span class="brand-mark" aria-hidden="true"></span>
+    </button>
+    <h1 class="app-bar-title" id="appBarTitle">周计划</h1>
+    <span class="app-bar-note" id="appBarNote"></span>
+  </div>
+</header>
+
+<main class="app-main">
+
+  <!-- 第 1 栏 · 周计划 -->
+  <section class="tab-panel" id="panel-plan" data-tab="plan">
+    <div class="wrap">
+      <div class="cover">
+        <p class="eyebrow" id="coverEyebrow">5 练 2 休 · 渐进超负荷</p>
+        <h2 class="cover-title">一周训练计划与动作要领</h2>
+        <dl class="hero-stats" id="heroStats"></dl>
+      </div>
+      <div class="day-grid" id="dayGrid" role="tablist" aria-label="选择训练日"></div>
+      <div id="dayPanel" class="day-panel"></div>
+    </div>
+  </section>
+
+  <!-- 第 2 栏 · 热身拉伸 -->
+  <section class="tab-panel" id="panel-prep" data-tab="prep" hidden>
+    <div class="wrap">
+      <div class="section-head">
+        <h2>热身与拉伸</h2>
+        <p class="section-desc">练前 8–10 分钟把关节和肌肉叫醒，练后 5–8 分钟静态拉伸收尾。顺序固定，照做即可。</p>
+      </div>
+      <div class="block">
+        <h4>热身流程<em>8–10 分钟</em></h4>
+        <div class="routine" id="warmupRoutine"></div>
+      </div>
+      <div class="block">
+        <h4>拉伸流程<em>5–8 分钟</em></h4>
+        <div class="routine" id="stretchRoutine"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 第 3 栏 · 原则 -->
+  <section class="tab-panel" id="panel-rules" data-tab="rules" hidden>
+    <div class="wrap">
+      <blockquote class="quote" id="quote"></blockquote>
+      <div class="section-head">
+        <h2>训练原则</h2>
+        <p class="section-desc">决定进步快慢的不是动作数量，而是下面这几条。</p>
+      </div>
+      <div class="rules" id="rulesList"></div>
+    </div>
+  </section>
+
+  <!-- 第 4 栏 · 计时打卡 -->
+  <section class="tab-panel" id="panel-track" data-tab="track" hidden>
+    <div class="wrap">
+      <div class="section-head">
+        <h2>计时与打卡</h2>
+        <p class="section-desc">组间休息倒计时，以及每次练完的打卡记录。</p>
+      </div>
+
+      <section class="card">
+        <div class="card-head">
+          <h3>组间休息</h3>
+          <span>复合 90–120 秒 · 孤立 45–60 秒</span>
+        </div>
+        <div class="timer-display">
+          <output class="timer-clock" id="timerClock">01:30</output>
+          <div class="timer-track"><span id="timerFill"></span></div>
+        </div>
+        <div class="timer-presets" id="timerPresets">
+          <button type="button" data-sec="30">30″</button>
+          <button type="button" data-sec="45">45″</button>
+          <button type="button" data-sec="60">60″</button>
+          <button type="button" data-sec="90" class="is-active">90″</button>
+          <button type="button" data-sec="120">120″</button>
+        </div>
+        <div class="timer-actions">
+          <button type="button" id="timerToggle" class="btn-primary btn-grow">开始</button>
+          <button type="button" id="timerReset" class="btn-ghost">重置</button>
+        </div>
+        <p class="card-hint">开始后切到别的栏目也没关系，倒计时会缩成底部一条继续跑；结束时响铃并震动。空格键可以开始 / 暂停。</p>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h3>打卡</h3>
+          <span id="checkinStreak">连续 0 天</span>
+        </div>
+        <div class="checkin-total">
+          <b id="checkinCount">0</b>
+          <span>累计打卡（天）</span>
+        </div>
+        <div class="checkin-facts">
+          <div><span>本周打卡</span><b id="checkinWeek">0 / 5</b></div>
+          <div><span>今天完成</span><b id="checkinToday">0 / 0</b></div>
+        </div>
+        <div class="checkin-grid" id="checkinGrid"></div>
+        <p class="checkin-caption">最近 14 天（含今天）</p>
+        <button type="button" id="checkinBtn" class="btn-primary btn-grow">今日打卡</button>
+        <p class="card-hint" id="checkinHint">练完点一下，记录保存在这台设备的浏览器里。</p>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h3>我的相册</h3>
+          <span id="albumMeta"></span>
+        </div>
+        <div class="album-actions">
+          <button type="button" class="btn-primary btn-grow" id="albumShoot">拍一张</button>
+          <button type="button" class="btn-ghost btn-grow" id="albumPick">从相册选</button>
+        </div>
+        <div class="album-grid" id="albumGrid"></div>
+        <p class="card-hint" id="albumHint">照片只存在这台设备上，不会上传。隔一两个月拍一次，对比最明显。</p>
+        <button type="button" class="btn-ghost btn-grow" id="albumClear" hidden>清空相册</button>
+        <input type="file" id="photoCamera" accept="image/*" capture="environment" hidden />
+        <input type="file" id="photoPick" accept="image/*" multiple hidden />
+      </section>
+    </div>
+  </section>
+
+</main>
+
+<div class="rest-bar" id="restBar" hidden>
+  <div class="wrap rest-bar-inner">
+    <button type="button" class="rest-bar-jump" id="restBarJump">
+      <span>组间休息</span><b id="restBarClock">01:30</b>
+    </button>
+    <button type="button" class="btn-ghost rest-bar-btn" id="restBarToggle">暂停</button>
+  </div>
+</div>
+
+<nav class="tabbar" id="tabbar" aria-label="主导航">
+  <div class="wrap tabbar-inner">
+    <button type="button" class="tab-item" data-tab="plan" aria-current="page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10.5h18"/></svg>
+      <span>周计划</span>
+    </button>
+    <button type="button" class="tab-item" data-tab="prep">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h3.4l2.3-5.6 3.2 11.2L14.4 12H21"/></svg>
+      <span>热身拉伸</span>
+    </button>
+    <button type="button" class="tab-item" data-tab="rules">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 6.5h11M9.5 12h11M9.5 17.5h11"/><circle cx="4.4" cy="6.5" r="1.3"/><circle cx="4.4" cy="12" r="1.3"/><circle cx="4.4" cy="17.5" r="1.3"/></svg>
+      <span>原则</span>
+    </button>
+    <button type="button" class="tab-item" data-tab="track">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13.6" r="7.6"/><path d="M12 10v3.9l2.4 1.8M9.6 3h4.8M12 3v3"/></svg>
+      <span>计时打卡</span>
+    </button>
+  </div>
+</nav>
+
+<!-- 个人喜好（点左上角图标打开） -->
+<div class="sheet" id="prefsSheet" hidden>
+  <div class="sheet-bar">
+    <button type="button" class="sheet-back" id="prefsBack" aria-label="返回">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <h2>个人喜好</h2>
+  </div>
+  <div class="sheet-body">
+    <section class="card">
+      <div class="card-head">
+        <h3>界面配色</h3>
+        <span id="themeName">白</span>
+      </div>
+      <div class="theme-row" id="themeRow"></div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h3>训练顺序</h3>
+        <span id="schedNote"></span>
+      </div>
+      <div class="sched-list" id="schedList"></div>
+      <p class="card-hint">拖动格子右边的小点就能换顺序；点格子本身，可以把那天换成别的部位（同一个部位可以重复，也可以把休息日挪到别的天）。</p>
+      <button type="button" class="btn-ghost btn-grow" id="schedReset">恢复默认顺序</button>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h3>离线使用</h3>
+      </div>
+      <p class="card-hint" id="offlineNote">正在检查离线缓存…</p>
+      <p class="card-hint">手机浏览器菜单里选“添加到主屏幕”，以后点图标直接打开，健身房信号差也能用。</p>
+    </section>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox" hidden>
+  <button type="button" class="lightbox-close" id="lightboxClose" aria-label="关闭">×</button>
+  <img id="lightboxImg" alt="" />
+  <p id="lightboxCap"></p>
+</div>
+
+<!-- 选择某天练什么（从底部弹出） -->
+<div class="picker" id="picker" hidden>
+  <div class="picker-backdrop" id="pickerBackdrop"></div>
+  <div class="picker-sheet" role="dialog" aria-modal="true" aria-labelledby="pickerTitle">
+    <p class="picker-title" id="pickerTitle">周一 练什么</p>
+    <div class="picker-list" id="pickerList" role="listbox"></div>
+    <button type="button" class="picker-cancel" id="pickerCancel">取消</button>
+  </div>
+</div>
+
+<script src="assets/js/data/mon.js"></script>
+<script src="assets/js/data/tue.js"></script>
+<script src="assets/js/data/wed.js"></script>
+<script src="assets/js/data/thu.js"></script>
+<script src="assets/js/data/fri.js"></script>
+<script src="assets/js/data/sat.js"></script>
+<script src="assets/js/data/sun.js"></script>
+<script src="assets/js/data/plan.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
