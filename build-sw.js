@@ -5,8 +5,8 @@ const path = require("path");
 const crypto = require("crypto");
 
 const root = __dirname;
-const skipDirs = ["preview", "node_modules"];
-const skipFiles = new Set(["build-sw.js", "sw.js", "README.md", "dev-server.py", "manifest.webmanifest"]);
+const skipDirs = ["preview", "node_modules", "dist"];
+const skipFiles = new Set(["build-sw.js", "build-dist.js", "sw.js", "README.md", "dev-server.py", "manifest.webmanifest"]);
 
 const files = [];
 (function walk(dir) {

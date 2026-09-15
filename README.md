@@ -70,6 +70,30 @@ arm-01 … arm-06   周五 手臂  6 个动作（当天的核心动作没有配�
 
 现有的 33 张图是从五张训练计划拼图（周一胸 / 周二背 / 周三肩 / 臀腿 9 动作 / 手臂计划）里按坐标裁出来的：先定位每个动作的图形区，剔除图里的标题、图注文字和右下角水印，再统一排进 448×336 的白底画布。因此每张图都是纯动作示意，文字说明一律由页面自己渲染，改文案不用重新做图。
 
+## 发布上线
+
+线上地址：<https://shiny-vacherin-2ad534.netlify.app/> ，代码仓库：<https://github.com/sherl786991-art/fitness-site> 。
+
+改完东西要发布时，先在项目目录里跑两条命令，再部署：
+
+```
+node build-sw.js      # 重新生成离线缓存清单（改了网站文件就要跑）
+node build-dist.js    # 生成 dist/：只含 index.html、manifest、sw.js、assets
+netlify deploy --prod --dir=dist --site=9e50e535-2b53-4e20-91c6-a17d4a18afc5
+```
+
+`dist/` 是发布产物（已在 `.gitignore` 里），不要直接改它。也可以把 `dist/` 整个拖到 Netlify 的 Deploys 页面手动发布。
+
+推送到 GitHub：
+
+```
+git add -A
+git commit -m "说明"
+git push
+```
+
+注意：这台机器上 git 需要走本地代理（仓库里已设 `http.proxy=http://127.0.0.1:7890`）；另外 C 盘上无法重命名文件（会报 `EXDEV`），所以 Netlify CLI 的配置目录被指到了 `D:\sherl\.netlify-cli-home`，运行时需要 `APPDATA` 指向它。
+
 ## 已实现的小功能
 
 - 默认打开当天的训练（按系统时间判断星期）。
