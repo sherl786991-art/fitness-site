@@ -948,8 +948,10 @@
       }
     } else {
       window.addEventListener("load", function () {
-        navigator.serviceWorker.register("sw.js").then(function () {
+        navigator.serviceWorker.register("sw.js").then(function (reg) {
           renderOffline();
+          /* 每次打开都主动查一次有没有新版，不等浏览器自己的节流 */
+          reg.update().catch(function () { /* 忽略 */ });
         }, function () {
           var el = $("#offlineNote");
           if (el && !$("#prefsSheet").hidden) { el.textContent = "离线缓存没注册成功，联网打开即可。"; }

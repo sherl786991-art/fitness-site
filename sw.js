@@ -1,6 +1,6 @@
 /* 离线缓存：先给缓存，再后台更新本地副本。
    这个文件由 build-sw.js 生成，改了网站文件以后重新跑一次。 */
-var CACHE = "fit-2a60ae6718";
+var CACHE = "fit-38c8c45bd4";
 var ASSETS = [
   "./",
   "./assets/css/style.css",
@@ -75,24 +75,62 @@ self.addEventListener("activate", function (event) {
   );
 });
 
+function cachePut(request, response) {
+  if (response && response.status === 200 && response.type === "basic") {
+    var copy = response.clone();
+    return caches.open(CACHE).then(function (cache) { return cache.put(request, copy); });
+  }
+  return Promise.resolve();
+}
+
+function offlineResponse(isPage) {
+  if (!isPage) { return Promise.resolve(new Response("", { status: 504, statusText: "offline" })); }
+  return caches.match("./index.html").then(function (page) {
+    if (page) { return page; }
+    return new Response("离线了，而且本机没有缓存。", {
+      status: 503,
+      headers: { "Content-Type": "text/plain; charset=utf-8" }
+    });
+  });
+}
+
+/* 页面、样式、脚本：先要最新的，成功就更新缓存；断网才退回缓存 */
+function networkFirst(request) {
+  return fetch(request).then(function (response) {
+    if (response && response.status === 200 && response.type === "basic") {
+      var copy = response.clone();
+      return caches.open(CACHE).then(function (cache) {
+        return cache.put(request, copy);
+      }).then(function () { return response; });
+    }
+    return response;
+  }).catch(function () {
+    return caches.match(request).then(function (cached) {
+      return cached || offlineResponse(request.mode === "navigate");
+    });
+  });
+}
+
+/* 图片等静态资源：直接用缓存，省流量也快。
+   有变动时缓存名会跟着换，install 阶段会整包重新下载，所以不需要每次后台重取。 */
+function cacheFirst(request) {
+  return caches.match(request).then(function (cached) {
+    if (cached) { return cached; }
+    return fetch(request).then(function (response) {
+      return cachePut(request, response).then(function () { return response; });
+    }).catch(function () {
+      return offlineResponse(false);
+    });
+  });
+}
+
 self.addEventListener("fetch", function (event) {
   var request = event.request;
   if (request.method !== "GET") { return; }
   var url = new URL(request.url);
   if (url.origin !== self.location.origin) { return; }
 
-  event.respondWith(
-    caches.match(request).then(function (cached) {
-      var fresh = fetch(request).then(function (response) {
-        if (response && response.status === 200 && response.type === "basic") {
-          var copy = response.clone();
-          caches.open(CACHE).then(function (cache) { cache.put(request, copy); });
-        }
-        return response;
-      }).catch(function () {
-        return cached || caches.match("./index.html");
-      });
-      return cached || fresh;
-    })
-  );
+  /* 页面本体和样式脚本走“网络优先”，图片走“缓存优先” */
+  var alwaysFresh = request.mode === "navigate" || /.(html|css|js|webmanifest)$/.test(url.pathname);
+  event.respondWith(alwaysFresh ? networkFirst(request) : cacheFirst(request));
 });
